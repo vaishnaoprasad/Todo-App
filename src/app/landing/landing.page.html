@@ -1,0 +1,256 @@
+<ion-header class="ion-no-border">
+  <ion-grid>
+    <ion-row>
+      <ion-col sizeMd="5" offsetMd="3.5">
+        <ion-toolbar>
+          <ion-progress-bar *ngIf="isLoading" type="indeterminate"></ion-progress-bar>
+    
+          <ion-title>
+            <p style="display: flex; align-items: center; gap: 1rem;">
+              <img style="margin: 0 !important; padding: 0 !important; background: #101010; border-radius: 50%;" src="../../assets/icon/task_alt_24dp_E8EAED_FILL0_wght400_GRAD0_opsz24.svg" />
+              <strong style="margin: 0 !important; padding: 0 !important;">TODO MANAGER</strong>
+            </p>
+          </ion-title>
+
+          <ion-buttons slot="end">
+            <ion-button *ngIf="items.length > 0" fill="clear"
+              (click)="createTask()">
+              <ion-icon size="large" aria-hidden="true" name="create"></ion-icon>
+            </ion-button>
+            <ion-button id="childModal2" fill="clear">
+              <ion-badge>{{items.length}}</ion-badge>
+              <ion-icon size="large" name="list-circle"></ion-icon>
+            </ion-button>
+            <ion-button color="success" fill="clear" (click)="refreshContent()">
+              <ion-icon size="large" name="refresh-circle"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-header>
+
+<ion-content>
+
+  <ion-grid *ngIf="!isLoading">
+    <ion-row>
+      <ion-col sizeMd="5" offsetMd="3.5">
+
+        <ion-toolbar>
+          <ion-title>
+              My Tasks
+          </ion-title>
+        </ion-toolbar>
+
+        <swiper-container class="mySwiper ion-margin-vertical" effect="coverflow" slides-per-view="1.2"
+          centered-slides="true" initial-slide="0" coverflow-effect-rotate="10" coverflow-effect-stretch="0"
+          coverflow-effect-depth="10" coverflow-effect-modifier="0" coverflow-effect-slide-shadows="true"
+          space-between="10">
+
+          <swiper-slide class="ion-padding" *ngIf="items.length === 0">
+            <ion-item lines="none" color="none">
+              <ion-label>
+                <h4>
+                  Its empty
+                </h4>
+                <ion-note>To add new task Tap or Click button below</ion-note>
+              </ion-label>
+            </ion-item>
+            <ion-item lines="none" color="none">
+              <ion-button size="small" color="primary" expand="block" fill="solid" (click)="createTask()">
+                <ion-label>New Task</ion-label>
+                <ion-icon aria-hidden="true" name="create" style="margin-left: 4px;"></ion-icon>
+              </ion-button>
+            </ion-item>
+          </swiper-slide>
+
+          <swiper-slide class="ion-padding" *ngFor="let item of items; let i=index;">
+            <ion-item lines="none" color="none">
+              <ion-label>
+                <h1 style="font-size: 2em; text-align: center; font-weight: bold;">
+                  {{ getTimeLeft(item.deadline) }}
+                </h1>
+                <h3 style="text-align: center; font-weight: bold;">Time Left</h3>
+              </ion-label>
+            </ion-item>
+            <ion-item lines="none" color="none">
+              <ion-label>
+                <h4>{{ item.title }}</h4>
+                <ion-note>{{item.description}}</ion-note>
+              </ion-label>
+            </ion-item>
+            <ion-item lines="none" color="none">
+              <ion-label slot="end">
+                <ion-note>Deadline</ion-note><br />
+                <small>{{item.deadline | date: 'medium'}}</small>
+              </ion-label>
+            </ion-item>
+            <ion-toolbar lines="none" color="none">
+              <ion-button slot="end" size="small" expand="block" color="success" fill="clear"
+                (click)="markCompleted(item)">
+                <ion-label>Mark as done </ion-label>
+                <ion-icon name="checkmark-circle"></ion-icon>
+              </ion-button>
+            </ion-toolbar>
+          </swiper-slide>
+        </swiper-container>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+
+<ion-modal #childModal1 trigger="childModal1" show-backdrop="false" [initialBreakpoint]="1" [breakpoints]="[0, 0.5, 1]"
+  handleBehavior="cycle">
+  <ng-template>
+
+    <ion-header class="ion-no-border ion-padding-vertical">
+      <form [formGroup]="taskForm" (ngSubmit)="formType === 'create' ? saveTask() : updateTask()">
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button size="small" color="medium" fill="solid" (click)="closeChildModal1()" style="transform: scale(0.8);">
+              <ion-icon name="arrow-undo" style="margin-right: 4px;"></ion-icon>
+              <ion-label>Go Back</ion-label>
+            </ion-button>
+          </ion-buttons>
+
+          <!-- <ion-buttons slot="end">
+            <ion-button size="small" color="primary" fill="solid" (click)="resetTaskForm()" style="transform: scale(0.8);">
+              <ion-label>Reset</ion-label>
+              <ion-icon aria-hidden="true" name="refresh-circle" style="margin-left: 4px;"></ion-icon>
+            </ion-button>
+            <ion-button size="small" color="{{formType === 'create' ? 'success' : 'primary'}}" fill="solid"
+              type="submit" style="transform: scale(0.8);">
+              <ion-label>{{formType === 'create' ? 'Save' : 'Update'}}</ion-label>
+              <ion-icon aria-hidden="true" name="save" style="margin-left: 4px;"></ion-icon>
+            </ion-button>
+          </ion-buttons> -->
+        </ion-toolbar>
+      </form>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <ion-grid>
+        <ion-row>
+          <ion-col sizeMd="6" offsetMd="3">
+      <form [formGroup]="taskForm">
+        <ion-list>
+          <ion-item>
+            <ion-input id="title" formControlName="title" label="Title" labelPlacement="stacked"
+              placeholder="Give a title"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-textarea rows="5" id="description" formControlName="description" label="Description"
+              labelPlacement="stacked" placeholder="Write a description"></ion-textarea>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Deadline</ion-label>
+            <ion-datetime-button class="ion-margin-vertical" id="deadline" datetime="datetime"
+              color="none"></ion-datetime-button>
+          </ion-item>
+        </ion-list>
+      </form>
+
+      <ion-toolbar>
+        <!-- <ion-buttons slot="start">
+          <ion-button size="small" color="medium" fill="solid" (click)="closeChildModal1()" style="transform: scale(0.8);">
+            <ion-label>Cancel</ion-label>
+            <ion-icon name="close-circle" style="margin-left: 4px;"></ion-icon>
+          </ion-button>
+        </ion-buttons> -->
+
+        <ion-buttons slot="end">
+          <ion-button size="small" color="primary" fill="solid" (click)="resetTaskForm()" style="transform: scale(0.8);">
+            <ion-label>Reset</ion-label>
+            <ion-icon aria-hidden="true" name="refresh-circle" style="margin-left: 4px;"></ion-icon>
+          </ion-button>
+          <ion-button size="small" color="{{formType === 'create' ? 'success' : 'primary'}}" fill="solid"
+            type="submit" style="transform: scale(0.8);">
+            <ion-label>{{formType === 'create' ? 'Save' : 'Update'}}</ion-label>
+            <ion-icon aria-hidden="true" name="save" style="margin-left: 4px;"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<ion-modal [keepContentsMounted]="true">
+  <ng-template>
+    <ion-datetime #datetime id="datetime" presentation="date-time" display-format="MMM DD, YYYY HH:mm"
+      (ionChange)="onSelectDeadline($event)" [showClearButton]="true" [showDefaultButtons]="true"></ion-datetime>
+  </ng-template>
+</ion-modal>
+
+<ion-modal #childModal2 trigger="childModal2" show-backdrop="false" [initialBreakpoint]="1" [breakpoints]="[0, 0.5, 1]"
+  handleBehavior="cycle">
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar>
+        <ion-progress-bar *ngIf="isLoading" type="indeterminate"></ion-progress-bar>
+
+        <ion-buttons slot="start">
+          <ion-button size="small" color="medium" fill="solid" (click)="closeChildModal2()" style="transform: scale(0.8);">
+            <ion-icon name="arrow-undo" style="margin-right: 4px;"></ion-icon>
+            <ion-label>Go Back</ion-label>
+          </ion-button>
+        </ion-buttons>
+
+        <ion-title>Task Manager</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+
+      <ion-grid>
+        <ion-row>
+          <ion-col sizeMd="6" offsetMd="3">
+
+        
+      <ion-list *ngIf="!isLoading">
+        <ion-item *ngIf="items.length === 0">
+          <ion-label>
+            <h4>Its empty</h4>
+            <ion-note>No tasks available to manage.</ion-note>
+          </ion-label>
+        </ion-item>
+
+        <ion-item *ngIf="items.length > 0">
+          <ion-label>
+            <h4>Directions to operate</h4>
+            <ion-note>Swipe the item to left to see options.</ion-note>
+          </ion-label>
+        </ion-item>
+
+        <ion-item-sliding *ngFor="let item of items; let i=index;">
+          <ion-item [button]="true">
+            <ion-label>
+              <h3>{{ item.title }}</h3>
+              <h3>{{item.description}}</h3>
+              <ion-note>{{item.deadline | date}}</ion-note>
+            </ion-label>
+          </ion-item>
+          <ion-item-options slot="end">
+            <ion-item-option color="none" (click)="markCompleted(item)">
+              <ion-icon slot="icon-only" name="checkmark-circle" color="success"></ion-icon>
+            </ion-item-option>
+            <ion-item-option color="none" (click)="editTask(item)">
+              <ion-icon slot="icon-only" name="create" color="tertiary"></ion-icon>
+            </ion-item-option>
+            <ion-item-option color="none" expandable="true" (click)="deleteTask(item)">
+              <ion-icon slot="icon-only" name="trash" color="danger"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      </ion-list>
+
+    </ion-col>
+  </ion-row>
+</ion-grid>
+
+    </ion-content>
+  </ng-template>
+</ion-modal>
