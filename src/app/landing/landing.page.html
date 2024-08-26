@@ -100,7 +100,7 @@
   </ion-grid>
 </ion-content>
 
-<ion-modal #childModal1 trigger="childModal1" show-backdrop="false" [initialBreakpoint]="1" [breakpoints]="[0, 0.5, 1]"
+<ion-modal class="childModal1" #childModal1 trigger="childModal1" show-backdrop="false" [initialBreakpoint]="1" [breakpoints]="[0, 0.5, 1]"
   handleBehavior="cycle">
   <ng-template>
 
@@ -149,29 +149,27 @@
               color="none"></ion-datetime-button>
           </ion-item>
         </ion-list>
+        <ion-toolbar>
+          <!-- <ion-buttons slot="start">
+            <ion-button size="small" color="medium" fill="solid" (click)="closeChildModal1()" style="transform: scale(0.8);">
+              <ion-label>Cancel</ion-label>
+              <ion-icon name="close-circle" style="margin-left: 4px;"></ion-icon>
+            </ion-button>
+          </ion-buttons> -->
+  
+          <ion-buttons slot="end">
+            <ion-button size="small" color="primary" fill="solid" (click)="resetTaskForm()" style="transform: scale(0.8);">
+              <ion-label>Reset</ion-label>
+              <ion-icon aria-hidden="true" name="refresh-circle" style="margin-left: 4px;"></ion-icon>
+            </ion-button>
+            <ion-button size="small" type="submit" color="{{formType === 'create' ? 'success' : 'primary'}}" fill="solid"
+              type="submit" style="transform: scale(0.8);" (click)="formType === 'create' ? saveTask() : updateTask()">
+              <ion-label>{{formType === 'create' ? 'Save' : 'Update'}}</ion-label>
+              <ion-icon aria-hidden="true" name="save" style="margin-left: 4px;"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
       </form>
-
-      <ion-toolbar>
-        <!-- <ion-buttons slot="start">
-          <ion-button size="small" color="medium" fill="solid" (click)="closeChildModal1()" style="transform: scale(0.8);">
-            <ion-label>Cancel</ion-label>
-            <ion-icon name="close-circle" style="margin-left: 4px;"></ion-icon>
-          </ion-button>
-        </ion-buttons> -->
-
-        <ion-buttons slot="end">
-          <ion-button size="small" color="primary" fill="solid" (click)="resetTaskForm()" style="transform: scale(0.8);">
-            <ion-label>Reset</ion-label>
-            <ion-icon aria-hidden="true" name="refresh-circle" style="margin-left: 4px;"></ion-icon>
-          </ion-button>
-          <ion-button size="small" color="{{formType === 'create' ? 'success' : 'primary'}}" fill="solid"
-            type="submit" style="transform: scale(0.8);">
-            <ion-label>{{formType === 'create' ? 'Save' : 'Update'}}</ion-label>
-            <ion-icon aria-hidden="true" name="save" style="margin-left: 4px;"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -186,7 +184,7 @@
   </ng-template>
 </ion-modal>
 
-<ion-modal #childModal2 trigger="childModal2" show-backdrop="false" [initialBreakpoint]="1" [breakpoints]="[0, 0.5, 1]"
+<ion-modal class="childModal2" #childModal2 trigger="childModal2" show-backdrop="false" [initialBreakpoint]="1" [breakpoints]="[0, 0.5, 1]"
   handleBehavior="cycle">
   <ng-template>
     <ion-header class="ion-no-border">

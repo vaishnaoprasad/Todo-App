@@ -43,10 +43,3 @@ body {
   ion-progress-bar::part(progress) {
     background: #f3e895;
   }
-
-  ion-modal{
-    min-width: 100% !important;
-    width: 100% !important;
-    --min-width: 100% !important;
-    --width: 100% !important;
-  }

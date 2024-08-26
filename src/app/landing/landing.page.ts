@@ -117,6 +117,9 @@ export class LandingPage implements OnInit {
   }
 
   async saveTask() {
+
+    console.log('CLicked Save Task');
+
     this.isLoading = true;
     const data = this.taskForm.value;
     const task = {
